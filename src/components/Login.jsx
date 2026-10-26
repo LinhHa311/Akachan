@@ -15,7 +15,7 @@ export default function Login() {
 
   return (
     <main className="container">
-      <h1>Sam's Daily</h1>
+      <h1>Sam's Diary</h1>
       <form className="card form" onSubmit={handleSubmit}>
         <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
         <input type="password" placeholder="Mật khẩu" value={password} onChange={(e) => setPassword(e.target.value)} required />

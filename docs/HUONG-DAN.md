@@ -1,4 +1,4 @@
-# Hướng dẫn làm và vận hành Sam's Daily
+# Hướng dẫn làm và vận hành Sam's Diary
 
 Tài liệu này tóm tắt cách app được làm từ đầu, cách sửa tính năng hằng ngày và cách vận hành. Mục đích: đọc để hiểu, rồi tự làm được app tương tự.
 

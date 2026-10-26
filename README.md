@@ -1,4 +1,4 @@
-# Sam's Daily 🍼
+# Sam's Diary 🍼
 
 Web app nhỏ, miễn phí, để hai vợ chồng ghi nhật ký em bé sơ sinh: cữ bú, tiểu tiện, đại tiện, kèm tổng hợp và biểu đồ so sánh từng ngày.
 
