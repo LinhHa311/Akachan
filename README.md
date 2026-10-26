@@ -59,3 +59,4 @@ Trên điện thoại, mở link rồi chọn **Thêm vào màn hình chính** �
 - [ ] PWA (icon, chạy toàn màn hình), sửa mục đã ghi, đồng hồ đếm giờ bú
 - [ ] Chọn khoảng ngày tuỳ ý, xuất CSV
 - [ ] Nhắc giờ bú, cân nặng/chiều cao
+Akachan
