@@ -18,18 +18,40 @@ function detail(e) {
 
 export default function DayView({ day, onDayChange, version, onChanged }) {
   const [entries, setEntries] = useState([])
+  // Mục đang chờ bấm lần 2 để xoá. Không dùng confirm() vì app mở từ
+  // màn hình chính trên iPhone có thể không hiện hộp xác nhận.
+  const [confirmId, setConfirmId] = useState(null)
+  const [deletingId, setDeletingId] = useState(null)
 
   useEffect(() => {
     fetchEntriesOfDay(day).then(setEntries).catch((err) => alert(err.message))
   }, [day, version])
 
+  useEffect(() => {
+    if (confirmId === null) return
+    const id = setTimeout(() => setConfirmId(null), 4000)
+    return () => clearTimeout(id)
+  }, [confirmId])
+
   const [sum] = summarizeByDay(entries, 1, day)
   const today = isToday(day)
 
   async function remove(id) {
-    if (!confirm('Xoá mục này?')) return
-    await deleteEntry(id)
-    onChanged()
+    if (confirmId !== id) {
+      setConfirmId(id)
+      return
+    }
+    setConfirmId(null)
+    setDeletingId(id)
+    try {
+      await deleteEntry(id)
+      setEntries((list) => list.filter((e) => e.id !== id))
+      onChanged()
+    } catch (err) {
+      alert(err.message)
+    } finally {
+      setDeletingId(null)
+    }
   }
 
   return (
@@ -62,7 +84,13 @@ export default function DayView({ day, onDayChange, version, onChanged }) {
             <span className="time">{new Date(e.at).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}</span>
             <span>{TYPES[e.type].icon} {TYPES[e.type].label}</span>
             <span className="muted">{detail(e)}</span>
-            <button className="link" onClick={() => remove(e.id)}>Xoá</button>
+            <button
+              className={`link delete ${confirmId === e.id ? 'confirm' : ''}`}
+              disabled={deletingId === e.id}
+              onClick={() => remove(e.id)}
+            >
+              {deletingId === e.id ? '…' : confirmId === e.id ? 'Xoá?' : 'Xoá'}
+            </button>
           </li>
         ))}
         {entries.length === 0 && (

@@ -97,6 +97,8 @@ tr.clickable td:first-child { color: var(--accent); }
 .list { list-style: none; padding: 0; margin: 12px 0 0; }
 .list li { display: grid; grid-template-columns: 52px 1fr auto auto; gap: 8px; align-items: center; padding: 8px 0; border-top: 1px solid var(--border); }
 .time { font-variant-numeric: tabular-nums; color: var(--muted); }
+.list button.delete { min-width: 52px; padding: 6px 8px; border-radius: 8px; }
+.list button.delete.confirm { background: #e5484d; color: #fff; font-weight: 600; }
 
 .table-wrap { overflow-x: auto; }
 table { width: 100%; border-collapse: collapse; font-size: 0.85rem; font-variant-numeric: tabular-nums; }

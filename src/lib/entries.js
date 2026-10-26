@@ -42,8 +42,10 @@ export async function addEntry(entry) {
 }
 
 export async function deleteEntry(id) {
-  const { error } = await supabase.from('entries').delete().eq('id', id)
+  // RLS chặn thì Supabase không báo lỗi mà chỉ xoá 0 dòng, nên phải kiểm tra
+  const { data, error } = await supabase.from('entries').delete().eq('id', id).select('id')
   if (error) throw error
+  if (data.length === 0) throw new Error('Không xoá được mục này (tài khoản chưa có quyền xoá).')
 }
 
 export async function fetchEntriesSince(from, to) {

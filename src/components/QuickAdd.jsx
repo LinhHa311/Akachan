@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { addEntry, TYPES } from '../lib/entries'
 
-const ML_PRESETS = [60, 90, 120]
+const ML_PRESETS = [20, 40, 60]
 
 export default function QuickAdd({ onAdded }) {
   const [open, setOpen] = useState(null) // 'breast' | 'formula' | null
