@@ -1,0 +1,67 @@
+import { supabase } from './supabase'
+
+export const TYPES = {
+  breast: { label: 'Sữa mẹ', icon: '🤱' },
+  formula: { label: 'Sữa CT', icon: '🍼' },
+  pee: { label: 'Tiểu', icon: '💧' },
+  poop: { label: 'Đại', icon: '💩' },
+}
+
+export function startOfDay(date = new Date()) {
+  const d = new Date(date)
+  d.setHours(0, 0, 0, 0)
+  return d
+}
+
+// Ngày theo giờ địa phương, dạng YYYY-MM-DD
+export function dayKey(date) {
+  const d = new Date(date)
+  const m = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${d.getFullYear()}-${m}-${day}`
+}
+
+export async function addEntry(entry) {
+  const { error } = await supabase.from('entries').insert(entry)
+  if (error) throw error
+}
+
+export async function deleteEntry(id) {
+  const { error } = await supabase.from('entries').delete().eq('id', id)
+  if (error) throw error
+}
+
+export async function fetchEntriesSince(from) {
+  const { data, error } = await supabase
+    .from('entries')
+    .select('*')
+    .gte('at', from.toISOString())
+    .order('at', { ascending: false })
+  if (error) throw error
+  return data
+}
+
+// Gom theo ngày (giờ địa phương), trả về mảng từ cũ đến mới, có cả ngày trống
+export function summarizeByDay(entries, days) {
+  const result = []
+  for (let i = days - 1; i >= 0; i--) {
+    const d = startOfDay()
+    d.setDate(d.getDate() - i)
+    result.push({ day: dayKey(d), feeds: 0, breastMin: 0, formulaMl: 0, pee: 0, poop: 0 })
+  }
+  const byKey = Object.fromEntries(result.map((r) => [r.day, r]))
+  for (const e of entries) {
+    const r = byKey[dayKey(e.at)]
+    if (!r) continue
+    if (e.type === 'breast') {
+      r.feeds++
+      r.breastMin += e.duration_min ?? 0
+    } else if (e.type === 'formula') {
+      r.feeds++
+      r.formulaMl += e.amount_ml ?? 0
+    } else {
+      r[e.type]++
+    }
+  }
+  return result
+}
