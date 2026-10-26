@@ -15,7 +15,7 @@ function summaryItems(sum) {
   return [
     ['feeds', sum.feeds, 'cữ', 'Cữ bú'],
     ['breast', sum.breastMin, 'phút', 'Bú mẹ'],
-    ['breast_bottle', sum.bottleMl, 'ml', 'Sữa mẹ'],
+    ['breast_bottle', sum.bottleMl, 'ml', 'Sữa mẹ bình'],
     ['formula', sum.formulaMl, 'ml', 'Sữa CT'],
     ['pump', sum.pumpMl, 'ml', 'Vắt sữa'],
     ['pee', sum.pee, 'lần', 'Tiểu'],
