@@ -1,4 +1,4 @@
-# Akachan 🍼
+# Sam's Daily 🍼
 
 Web app nhỏ, miễn phí, để hai vợ chồng ghi nhật ký em bé sơ sinh: cữ bú, tiểu tiện, đại tiện, kèm tổng hợp và biểu đồ so sánh từng ngày.
 
@@ -6,7 +6,7 @@ Web app nhỏ, miễn phí, để hai vợ chồng ghi nhật ký em bé sơ sin
 
 - **Ghi nhanh** bằng 4 nút lớn (dùng một tay lúc nửa đêm):
   - 🤱 Sữa mẹ: số phút bú
-  - 🍼 Sữa công thức: số ml (có nút nhanh 60 / 90 / 120 ml)
+  - 🍼 Sữa công thức: số ml (có nút nhanh 20 / 40 / 60 ml)
   - 💧 Tiểu, 💩 Đại: bấm một lần là ghi lại giờ hiện tại
 - **Hôm nay**: danh sách theo giờ, xoá được, kèm tổng trong ngày (số cữ bú, tổng ml, số phút sữa mẹ, số lần tiểu/đại)
 - **Thống kê** 7 hoặc 30 ngày:

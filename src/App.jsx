@@ -29,7 +29,7 @@ export default function App() {
   if (!isConfigured) {
     return (
       <main className="container">
-        <h1>Akachan</h1>
+        <h1>Sam's Daily</h1>
         <p>Chưa cấu hình Supabase. Copy <code>.env.example</code> thành <code>.env</code> và điền URL + anon key.</p>
       </main>
     )
@@ -50,7 +50,7 @@ export default function App() {
   return (
     <main className="container">
       <header className="header">
-        <h1>Akachan</h1>
+        <h1>Sam's Daily</h1>
         <button className="link" onClick={() => supabase.auth.signOut()}>Đăng xuất</button>
       </header>
       <Clock />
