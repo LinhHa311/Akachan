@@ -66,6 +66,28 @@ export function fetchEntriesOfDay(day) {
   return fetchEntriesSince(from, addDays(from, 1))
 }
 
+function emptyTotals() {
+  return { feeds: 0, breastMin: 0, bottleMl: 0, formulaMl: 0, pumpMl: 0, pee: 0, poop: 0 }
+}
+
+// Cộng một lần ghi vào dòng tổng
+function addToTotals(r, e) {
+  if (e.type === 'breast') {
+    r.feeds++
+    r.breastMin += e.duration_min ?? 0
+  } else if (e.type === 'breast_bottle') {
+    r.feeds++
+    r.bottleMl += e.amount_ml ?? 0
+  } else if (e.type === 'formula') {
+    r.feeds++
+    r.formulaMl += e.amount_ml ?? 0
+  } else if (e.type === 'pump') {
+    r.pumpMl += e.amount_ml ?? 0
+  } else {
+    r[e.type]++
+  }
+}
+
 // Gom theo ngày (giờ địa phương), trả về `days` ngày kết thúc ở `lastDay`,
 // từ cũ đến mới, có cả ngày trống
 export function summarizeByDay(entries, days, lastDay = new Date()) {
@@ -73,26 +95,19 @@ export function summarizeByDay(entries, days, lastDay = new Date()) {
   for (let i = days - 1; i >= 0; i--) {
     const d = startOfDay(lastDay)
     d.setDate(d.getDate() - i)
-    result.push({ day: dayKey(d), feeds: 0, breastMin: 0, bottleMl: 0, formulaMl: 0, pumpMl: 0, pee: 0, poop: 0 })
+    result.push({ day: dayKey(d), ...emptyTotals() })
   }
   const byKey = Object.fromEntries(result.map((r) => [r.day, r]))
   for (const e of entries) {
     const r = byKey[dayKey(e.at)]
-    if (!r) continue
-    if (e.type === 'breast') {
-      r.feeds++
-      r.breastMin += e.duration_min ?? 0
-    } else if (e.type === 'breast_bottle') {
-      r.feeds++
-      r.bottleMl += e.amount_ml ?? 0
-    } else if (e.type === 'formula') {
-      r.feeds++
-      r.formulaMl += e.amount_ml ?? 0
-    } else if (e.type === 'pump') {
-      r.pumpMl += e.amount_ml ?? 0
-    } else {
-      r[e.type]++
-    }
+    if (r) addToTotals(r, e)
   }
+  return result
+}
+
+// Gom các lần ghi của một ngày theo giờ (0–23, giờ địa phương)
+export function summarizeByHour(entries) {
+  const result = Array.from({ length: 24 }, (_, hour) => ({ hour, ...emptyTotals() }))
+  for (const e of entries) addToTotals(result[new Date(e.at).getHours()], e)
   return result
 }

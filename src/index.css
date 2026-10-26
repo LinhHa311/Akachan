@@ -121,6 +121,7 @@ input {
 .day-nav button { font-size: 1.3rem; line-height: 1; padding: 6px 14px; }
 .day-nav input { flex: 1; text-align: center; }
 .back-today { display: block; margin: 6px auto 0; }
+.see-day { display: block; margin: 12px auto 0; color: var(--accent); }
 
 /* 7 thông số gọn trong 2 hàng, chỉ giữ màu chữ */
 .summary { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px 4px; margin-top: 14px; text-align: center; }
