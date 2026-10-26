@@ -2,11 +2,14 @@
 
 Web app nhỏ, miễn phí, để hai vợ chồng ghi nhật ký em bé sơ sinh: cữ bú, tiểu tiện, đại tiện, kèm tổng hợp và biểu đồ so sánh từng ngày.
 
+📘 Hướng dẫn chi tiết cách làm và vận hành: [docs/HUONG-DAN.md](docs/HUONG-DAN.md)
+
 ## Tính năng
 
-- **Ghi nhanh** bằng 4 nút lớn (dùng một tay lúc nửa đêm):
-  - 🤱 Sữa mẹ: số phút bú
-  - 🍼 Sữa công thức: số ml (có nút nhanh 20 / 40 / 60 ml)
+- **Ghi nhanh** bằng 6 nút lớn (dùng một tay lúc nửa đêm):
+  - 🤱 Bú mẹ: số phút bú
+  - 🥛 Sữa mẹ bình, 🍼 Sữa công thức: số ml (có nút nhanh 20 / 40 ml)
+  - 🫙 Vắt sữa: số ml vắt được, kèm giờ vắt
   - 💧 Tiểu, 💩 Đại: bấm một lần là ghi lại giờ hiện tại
 - **Hôm nay**: danh sách theo giờ, xoá được, kèm tổng trong ngày (số cữ bú, tổng ml, số phút sữa mẹ, số lần tiểu/đại)
 - **Thống kê** 7 hoặc 30 ngày:

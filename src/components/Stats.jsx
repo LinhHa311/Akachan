@@ -28,6 +28,7 @@ export default function Stats({ version, onOpenDay }) {
 
   const labels = rows.map((r) => `${r.day.slice(8)}/${r.day.slice(5, 7)}`)
   const options = { responsive: true, plugins: { legend: { position: 'bottom' } }, scales: { y: { beginAtZero: true } } }
+  const stacked = { ...options, scales: { x: { stacked: true }, y: { stacked: true, beginAtZero: true } } }
 
   return (
     <section className="card">
@@ -39,9 +40,21 @@ export default function Stats({ version, onOpenDay }) {
         ))}
       </div>
 
-      <h3>Sữa công thức (ml / ngày)</h3>
+      <h3>Bé uống bình (ml / ngày)</h3>
       <Bar
-        data={{ labels, datasets: [{ label: 'ml', data: rows.map((r) => r.formulaMl), backgroundColor: '#f6a5c0' }] }}
+        data={{
+          labels,
+          datasets: [
+            { label: 'Sữa mẹ bình', data: rows.map((r) => r.bottleMl), backgroundColor: '#e96a97' },
+            { label: 'Sữa CT', data: rows.map((r) => r.formulaMl), backgroundColor: '#f6c5d6' },
+          ],
+        }}
+        options={stacked}
+      />
+
+      <h3>Vắt sữa (ml / ngày)</h3>
+      <Bar
+        data={{ labels, datasets: [{ label: 'ml', data: rows.map((r) => r.pumpMl), backgroundColor: '#9d8df1' }] }}
         options={options}
       />
 
@@ -63,13 +76,13 @@ export default function Stats({ version, onOpenDay }) {
       <div className="table-wrap">
         <table>
           <thead>
-            <tr><th>Ngày</th><th>Cữ bú</th><th>Sữa mẹ (phút)</th><th>Sữa CT (ml)</th><th>Tiểu</th><th>Đại</th></tr>
+            <tr><th>Ngày</th><th>Cữ bú</th><th>Bú mẹ (phút)</th><th>SM bình (ml)</th><th>Sữa CT (ml)</th><th>Vắt (ml)</th><th>Tiểu</th><th>Đại</th></tr>
           </thead>
           <tbody>
             {[...rows].reverse().map((r) => (
               <tr key={r.day} className="clickable" onClick={() => onOpenDay(parseDayKey(r.day))}>
                 <td>{r.day.slice(8)}/{r.day.slice(5, 7)} ›</td>
-                <td>{r.feeds}</td><td>{r.breastMin}</td><td>{r.formulaMl}</td><td>{r.pee}</td><td>{r.poop}</td>
+                <td>{r.feeds}</td><td>{r.breastMin}</td><td>{r.bottleMl}</td><td>{r.formulaMl}</td><td>{r.pumpMl}</td><td>{r.pee}</td><td>{r.poop}</td>
               </tr>
             ))}
           </tbody>

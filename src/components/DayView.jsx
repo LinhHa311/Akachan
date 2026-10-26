@@ -12,8 +12,7 @@ import {
 
 function detail(e) {
   if (e.type === 'breast') return e.duration_min ? `${e.duration_min} phút` : ''
-  if (e.type === 'formula') return e.amount_ml ? `${e.amount_ml} ml` : ''
-  return ''
+  return e.amount_ml ? `${e.amount_ml} ml` : ''
 }
 
 export default function DayView({ day, onDayChange, version, onChanged }) {
@@ -72,8 +71,10 @@ export default function DayView({ day, onDayChange, version, onChanged }) {
 
       <div className="summary">
         <div><b>{sum.feeds}<small>cữ</small></b>Cữ bú</div>
+        <div><b>{sum.breastMin}<small>phút</small></b>Bú mẹ</div>
+        <div><b>{sum.bottleMl}<small>ml</small></b>Sữa mẹ bình</div>
         <div><b>{sum.formulaMl}<small>ml</small></b>Sữa CT</div>
-        <div><b>{sum.breastMin}<small>phút</small></b>Sữa mẹ</div>
+        <div><b>{sum.pumpMl}<small>ml</small></b>Vắt sữa</div>
         <div><b>{sum.pee}<small>lần</small></b>Tiểu</div>
         <div><b>{sum.poop}<small>lần</small></b>Đại</div>
       </div>

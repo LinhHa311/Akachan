@@ -2,10 +2,10 @@
 
 create table if not exists public.entries (
   id           bigint generated always as identity primary key,
-  type         text not null check (type in ('breast', 'formula', 'pee', 'poop')),
+  type         text not null check (type in ('breast', 'breast_bottle', 'formula', 'pump', 'pee', 'poop')),
   at           timestamptz not null default now(),
-  duration_min integer check (duration_min >= 0), -- chỉ dùng cho sữa mẹ
-  amount_ml    integer check (amount_ml >= 0),    -- chỉ dùng cho sữa công thức
+  duration_min integer check (duration_min >= 0), -- bú mẹ trực tiếp
+  amount_ml    integer check (amount_ml >= 0),    -- sữa mẹ bình, sữa công thức, vắt sữa
   note         text,
   created_by   uuid default auth.uid() references auth.users (id),
   created_at   timestamptz not null default now()
