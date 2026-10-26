@@ -1,0 +1,74 @@
+import { useEffect, useState } from 'react'
+import {
+  addDays,
+  dayKey,
+  deleteEntry,
+  fetchEntriesOfDay,
+  isToday,
+  parseDayKey,
+  summarizeByDay,
+  TYPES,
+} from '../lib/entries'
+
+function detail(e) {
+  if (e.type === 'breast') return e.duration_min ? `${e.duration_min} phút` : ''
+  if (e.type === 'formula') return e.amount_ml ? `${e.amount_ml} ml` : ''
+  return ''
+}
+
+export default function DayView({ day, onDayChange, version, onChanged }) {
+  const [entries, setEntries] = useState([])
+
+  useEffect(() => {
+    fetchEntriesOfDay(day).then(setEntries).catch((err) => alert(err.message))
+  }, [day, version])
+
+  const [sum] = summarizeByDay(entries, 1, day)
+  const today = isToday(day)
+
+  async function remove(id) {
+    if (!confirm('Xoá mục này?')) return
+    await deleteEntry(id)
+    onChanged()
+  }
+
+  return (
+    <section className="card">
+      <div className="day-nav">
+        <button aria-label="Ngày trước" onClick={() => onDayChange(addDays(day, -1))}>‹</button>
+        <input
+          type="date"
+          value={dayKey(day)}
+          max={dayKey(new Date())}
+          onChange={(e) => e.target.value && onDayChange(parseDayKey(e.target.value))}
+        />
+        <button aria-label="Ngày sau" disabled={today} onClick={() => onDayChange(addDays(day, 1))}>›</button>
+      </div>
+      {!today && (
+        <button className="link back-today" onClick={() => onDayChange(new Date())}>← Về hôm nay</button>
+      )}
+
+      <div className="summary">
+        <div><b>{sum.feeds}<small>cữ</small></b>Cữ bú</div>
+        <div><b>{sum.formulaMl}<small>ml</small></b>Sữa CT</div>
+        <div><b>{sum.breastMin}<small>phút</small></b>Sữa mẹ</div>
+        <div><b>{sum.pee}<small>lần</small></b>Tiểu</div>
+        <div><b>{sum.poop}<small>lần</small></b>Đại</div>
+      </div>
+
+      <ul className="list">
+        {entries.map((e) => (
+          <li key={e.id}>
+            <span className="time">{new Date(e.at).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}</span>
+            <span>{TYPES[e.type].icon} {TYPES[e.type].label}</span>
+            <span className="muted">{detail(e)}</span>
+            <button className="link" onClick={() => remove(e.id)}>Xoá</button>
+          </li>
+        ))}
+        {entries.length === 0 && (
+          <li className="muted">{today ? 'Chưa có ghi chép nào hôm nay.' : 'Không có ghi chép nào trong ngày này.'}</li>
+        )}
+      </ul>
+    </section>
+  )
+}

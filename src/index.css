@@ -76,8 +76,23 @@ input {
 .tabs button { flex: 1; }
 .tabs.small button { flex: none; }
 
-.summary { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; text-align: center; font-size: 0.75rem; color: var(--muted); }
-.summary b { display: block; font-size: 1.3rem; color: var(--text); }
+.clock { display: flex; align-items: baseline; gap: 8px; margin: -4px 0 12px; font-size: 0.85rem; }
+.clock-time { font-size: 1.1rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+.clock .muted::first-letter { text-transform: uppercase; }
+
+.day-nav { display: flex; gap: 8px; align-items: center; }
+.day-nav button { font-size: 1.3rem; line-height: 1; padding: 6px 14px; }
+.day-nav input { flex: 1; text-align: center; }
+.back-today { display: block; margin: 6px auto 0; }
+
+.summary { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; margin-top: 14px; text-align: center; font-size: 0.75rem; color: var(--muted); }
+.summary b { display: block; font-size: 1.3rem; color: var(--text); white-space: nowrap; }
+.summary small { margin-left: 2px; font-size: 0.7rem; font-weight: 500; color: var(--muted); }
+
+.hint { margin: -4px 0 8px; font-size: 0.8rem; }
+tr.clickable { cursor: pointer; }
+tr.clickable:active td { background: var(--accent-soft); }
+tr.clickable td:first-child { color: var(--accent); }
 
 .list { list-style: none; padding: 0; margin: 12px 0 0; }
 .list li { display: grid; grid-template-columns: 52px 1fr auto auto; gap: 8px; align-items: center; padding: 8px 0; border-top: 1px solid var(--border); }

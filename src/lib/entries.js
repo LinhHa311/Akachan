@@ -21,6 +21,21 @@ export function dayKey(date) {
   return `${d.getFullYear()}-${m}-${day}`
 }
 
+export function parseDayKey(key) {
+  const [y, m, d] = key.split('-').map(Number)
+  return new Date(y, m - 1, d)
+}
+
+export function addDays(date, n) {
+  const d = new Date(date)
+  d.setDate(d.getDate() + n)
+  return d
+}
+
+export function isToday(date) {
+  return dayKey(date) === dayKey(new Date())
+}
+
 export async function addEntry(entry) {
   const { error } = await supabase.from('entries').insert(entry)
   if (error) throw error
@@ -31,21 +46,28 @@ export async function deleteEntry(id) {
   if (error) throw error
 }
 
-export async function fetchEntriesSince(from) {
-  const { data, error } = await supabase
+export async function fetchEntriesSince(from, to) {
+  let query = supabase
     .from('entries')
     .select('*')
     .gte('at', from.toISOString())
-    .order('at', { ascending: false })
+  if (to) query = query.lt('at', to.toISOString())
+  const { data, error } = await query.order('at', { ascending: false })
   if (error) throw error
   return data
 }
 
-// Gom theo ngày (giờ địa phương), trả về mảng từ cũ đến mới, có cả ngày trống
-export function summarizeByDay(entries, days) {
+export function fetchEntriesOfDay(day) {
+  const from = startOfDay(day)
+  return fetchEntriesSince(from, addDays(from, 1))
+}
+
+// Gom theo ngày (giờ địa phương), trả về `days` ngày kết thúc ở `lastDay`,
+// từ cũ đến mới, có cả ngày trống
+export function summarizeByDay(entries, days, lastDay = new Date()) {
   const result = []
   for (let i = days - 1; i >= 0; i--) {
-    const d = startOfDay()
+    const d = startOfDay(lastDay)
     d.setDate(d.getDate() - i)
     result.push({ day: dayKey(d), feeds: 0, breastMin: 0, formulaMl: 0, pee: 0, poop: 0 })
   }

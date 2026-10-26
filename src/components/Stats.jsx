@@ -8,13 +8,13 @@ import {
   Tooltip,
 } from 'chart.js'
 import { Bar } from 'react-chartjs-2'
-import { fetchEntriesSince, startOfDay, summarizeByDay } from '../lib/entries'
+import { fetchEntriesSince, parseDayKey, startOfDay, summarizeByDay } from '../lib/entries'
 
 ChartJS.register(BarElement, CategoryScale, LinearScale, Legend, Tooltip)
 
 const RANGES = [7, 30]
 
-export default function Stats({ version }) {
+export default function Stats({ version, onOpenDay }) {
   const [days, setDays] = useState(7)
   const [rows, setRows] = useState([])
 
@@ -26,7 +26,7 @@ export default function Stats({ version }) {
       .catch((err) => alert(err.message))
   }, [days, version])
 
-  const labels = rows.map((r) => r.day.slice(5).replace('-', '/'))
+  const labels = rows.map((r) => `${r.day.slice(8)}/${r.day.slice(5, 7)}`)
   const options = { responsive: true, plugins: { legend: { position: 'bottom' } }, scales: { y: { beginAtZero: true } } }
 
   return (
@@ -59,6 +59,7 @@ export default function Stats({ version }) {
       />
 
       <h3>Bảng số</h3>
+      <p className="muted hint">Bấm vào một ngày để xem chi tiết.</p>
       <div className="table-wrap">
         <table>
           <thead>
@@ -66,8 +67,8 @@ export default function Stats({ version }) {
           </thead>
           <tbody>
             {[...rows].reverse().map((r) => (
-              <tr key={r.day}>
-                <td>{r.day.slice(5).replace('-', '/')}</td>
+              <tr key={r.day} className="clickable" onClick={() => onOpenDay(parseDayKey(r.day))}>
+                <td>{r.day.slice(8)}/{r.day.slice(5, 7)} ›</td>
                 <td>{r.feeds}</td><td>{r.breastMin}</td><td>{r.formulaMl}</td><td>{r.pee}</td><td>{r.poop}</td>
               </tr>
             ))}
