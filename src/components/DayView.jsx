@@ -10,6 +10,19 @@ import {
   TYPES,
 } from '../lib/entries'
 
+// Ô tổng trong ngày: [loại (để lấy màu), giá trị, đơn vị, nhãn]
+function summaryItems(sum) {
+  return [
+    ['feeds', sum.feeds, 'cữ', 'Cữ bú'],
+    ['breast', sum.breastMin, 'phút', 'Bú mẹ'],
+    ['breast_bottle', sum.bottleMl, 'ml', 'Sữa mẹ'],
+    ['formula', sum.formulaMl, 'ml', 'Sữa CT'],
+    ['pump', sum.pumpMl, 'ml', 'Vắt sữa'],
+    ['pee', sum.pee, 'lần', 'Tiểu'],
+    ['poop', sum.poop, 'lần', 'Đại'],
+  ]
+}
+
 function detail(e) {
   if (e.type === 'breast') return e.duration_min ? `${e.duration_min} phút` : ''
   return e.amount_ml ? `${e.amount_ml} ml` : ''
@@ -70,13 +83,12 @@ export default function DayView({ day, onDayChange, version, onChanged }) {
       )}
 
       <div className="summary">
-        <div><b>{sum.feeds}<small>cữ</small></b>Cữ bú</div>
-        <div><b>{sum.breastMin}<small>phút</small></b>Bú mẹ</div>
-        <div><b>{sum.bottleMl}<small>ml</small></b>Sữa mẹ bình</div>
-        <div><b>{sum.formulaMl}<small>ml</small></b>Sữa CT</div>
-        <div><b>{sum.pumpMl}<small>ml</small></b>Vắt sữa</div>
-        <div><b>{sum.pee}<small>lần</small></b>Tiểu</div>
-        <div><b>{sum.poop}<small>lần</small></b>Đại</div>
+        {summaryItems(sum).map(([type, value, unit, label]) => (
+          <div key={type} className={`stat t-${type}`}>
+            <b>{value}<small>{unit}</small></b>
+            {label}
+          </div>
+        ))}
       </div>
 
       <ul className="list">
@@ -95,7 +107,7 @@ export default function DayView({ day, onDayChange, version, onChanged }) {
           </li>
         ))}
         {entries.length === 0 && (
-          <li className="muted">{today ? 'Chưa có ghi chép nào hôm nay.' : 'Không có ghi chép nào trong ngày này.'}</li>
+          <li className="muted empty">{today ? 'Chưa có ghi chép nào hôm nay.' : 'Không có ghi chép nào trong ngày này.'}</li>
         )}
       </ul>
     </section>

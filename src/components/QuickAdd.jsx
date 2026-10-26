@@ -51,11 +51,11 @@ export default function QuickAdd({ onAdded }) {
         {Object.entries(TYPES).map(([type, t]) => (
           <button
             key={type}
-            className={`quick ${open === type ? 'active' : ''}`}
+            className={`quick t-${type} ${open === type ? 'active' : ''}`}
             disabled={busy}
             onClick={() => toggle(type)}
           >
-            <span className="icon">{t.icon}</span>
+            <span className="icon-tile">{t.icon}</span>
             {t.label}
           </button>
         ))}
