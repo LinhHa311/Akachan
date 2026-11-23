@@ -9,9 +9,8 @@
   /* Màu riêng cho từng loại ghi (icon, số, viền) */
   --c-feeds: #d9772b;
   --c-breast: #d9558a;
-  --c-breast_bottle: #2f9e5d;
   --c-formula: #3b7fd4;
-  --c-pump: #8a68d9;
+  --c-sleep: #5b57c9;
   --c-pee: #c2900c;
   --c-poop: #a8693a;
   font-family: ui-rounded, 'Nunito', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
@@ -29,9 +28,8 @@
     --border: #3a3540;
     --c-feeds: #f6b27a;
     --c-breast: #f59ac0;
-    --c-breast_bottle: #94dcae;
     --c-formula: #8fbcf5;
-    --c-pump: #c2adf5;
+    --c-sleep: #aeaaf5;
     --c-pee: #f3d47a;
     --c-poop: #e2a77a;
   }
@@ -82,9 +80,8 @@ input {
 /* Mỗi nút/ô mang class t-<loại> để lấy màu của loại đó */
 .t-feeds { --c: var(--c-feeds); }
 .t-breast { --c: var(--c-breast); }
-.t-breast_bottle { --c: var(--c-breast_bottle); }
 .t-formula { --c: var(--c-formula); }
-.t-pump { --c: var(--c-pump); }
+.t-sleep { --c: var(--c-sleep); }
 .t-pee { --c: var(--c-pee); }
 .t-poop { --c: var(--c-poop); }
 .icon-tile {
@@ -92,7 +89,15 @@ input {
   font-size: 1.5rem; background: color-mix(in srgb, var(--c) 22%, transparent);
 }
 
-.quick-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.quick-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+
+/* Ngủ / Dậy: 2 nút ngang, nút icon nằm bên trái chữ */
+.sleep-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
+.quick.sleep-btn { flex-direction: row; justify-content: center; gap: 10px; padding: 8px; font-size: 1rem; }
+.quick.sleep-btn .icon-tile { width: 36px; height: 36px; font-size: 1.25rem; }
+.sleep-btn:disabled { opacity: 0.4; }
+.sleep-btn.active:disabled { opacity: 1; }
+.sleep-status { margin: 10px 0 0; text-align: center; font-size: 0.9rem; color: var(--c-sleep); }
 .quick {
   display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 12px 4px;
   font-size: 0.9rem; font-weight: 600; border-radius: 14px;
@@ -123,8 +128,8 @@ input {
 .back-today { display: block; margin: 6px auto 0; }
 .see-day { display: block; margin: 12px auto 0; color: var(--accent); }
 
-/* 7 thông số gọn trong 2 hàng, chỉ giữ màu chữ */
-.summary { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px 4px; margin-top: 14px; text-align: center; }
+/* 6 thông số gọn trong 2 hàng, chỉ giữ màu chữ */
+.summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px 4px; margin-top: 14px; text-align: center; }
 .stat { font-size: 0.8rem; font-weight: 600; min-width: 0; white-space: nowrap; }
 .stat b { display: block; font-size: 1.35rem; font-weight: 800; line-height: 1.15; color: var(--c); }
 .stat small { margin-left: 2px; font-size: 0.75rem; font-weight: 700; }
@@ -135,9 +140,13 @@ tr.clickable:active td { background: var(--accent-soft); }
 tr.clickable td:first-child { color: var(--accent); }
 
 .list { list-style: none; padding: 0; margin: 12px 0 0; }
-.list li { display: grid; grid-template-columns: 52px 1fr auto auto; gap: 8px; align-items: center; padding: 8px 0; border-top: 1px solid var(--border); }
+.list li { display: grid; grid-template-columns: 46px 1fr auto auto; gap: 6px; align-items: center; padding: 8px 0; border-top: 1px solid var(--border); }
 /* Dòng "Chưa có ghi chép" không chia cột như các mục */
 .list li.empty { display: block; }
+.sleep-detail { white-space: nowrap; font-size: 0.9rem; }
+.sleep-detail b { color: var(--c-sleep); font-weight: 700; }
+/* Tên loại (cột 2) không bị bẻ đôi icon và chữ */
+.list li > span:nth-child(2) { white-space: nowrap; }
 .time { font-variant-numeric: tabular-nums; color: var(--muted); }
 .list button.delete { min-width: 52px; padding: 6px 8px; border-radius: 8px; }
 .list button.delete.confirm { background: #e5484d; color: #fff; font-weight: 600; }

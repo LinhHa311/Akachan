@@ -98,7 +98,7 @@ Cài trên iPhone: mở link bằng **Safari → Chia sẻ → Thêm vào MH ch�
 | [src/lib/supabase.js](../src/lib/supabase.js) | Tạo kết nối Supabase từ biến `.env` |
 | [supabase/schema.sql](../supabase/schema.sql) | Cấu trúc bảng `entries` + quyền RLS |
 
-Dữ liệu chỉ có **1 bảng** `entries`. Mỗi lần ghi là 1 dòng: `type` (`breast` bú mẹ / `breast_bottle` sữa mẹ bình / `formula` / `pump` vắt sữa / `pee` / `poop`), `at` (thời điểm), `duration_min` hoặc `amount_ml`. Tổng theo ngày không lưu riêng mà tính trên trình duyệt theo giờ địa phương.
+Dữ liệu chỉ có **1 bảng** `entries`. Mỗi lần ghi là 1 dòng: `type` (`breast` bú mẹ / `formula` / `pee` / `poop` / `sleep` giấc ngủ), `at` (thời điểm; với giấc ngủ là lúc ngủ), `end_at` (lúc dậy, chỉ dùng cho giấc ngủ, trống khi bé đang ngủ), `duration_min` hoặc `amount_ml`. Loại cũ `breast_bottle` / `pump` vẫn được bảng chấp nhận nhưng app không hiện nữa. Project tạo trước khi có chức năng ngủ cần chạy `supabase/migrate-ngu.sql` một lần. Tổng theo ngày không lưu riêng mà tính trên trình duyệt theo giờ địa phương.
 
 **Thử tự sửa:** đổi `const ML_PRESETS = [20, 40, 60]` trong `QuickAdd.jsx` thành số khác, chạy `npm run dev` và xem kết quả.
 

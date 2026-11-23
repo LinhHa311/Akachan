@@ -55,7 +55,7 @@ export default function App() {
       </header>
       <Clock />
 
-      <QuickAdd onAdded={refresh} />
+      <QuickAdd version={version} onAdded={refresh} />
 
       <nav className="tabs">
         {tabs.map((t) => (

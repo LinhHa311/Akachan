@@ -6,8 +6,11 @@ import {
   fetchEntriesOfDay,
   isToday,
   parseDayKey,
+  formatHHMM,
+  formatTime,
+  sleepDuration,
   summarizeByDay,
-  TYPES,
+  typeInfo,
 } from '../lib/entries'
 
 // Ô tổng trong ngày: [loại (để lấy màu), giá trị, đơn vị, nhãn]
@@ -15,15 +18,28 @@ function summaryItems(sum) {
   return [
     ['feeds', sum.feeds, 'cữ', 'Cữ bú'],
     ['breast', sum.breastMin, 'phút', 'Bú mẹ'],
-    ['breast_bottle', sum.bottleMl, 'ml', 'Sữa mẹ bình'],
     ['formula', sum.formulaMl, 'ml', 'Sữa CT'],
-    ['pump', sum.pumpMl, 'ml', 'Vắt sữa'],
+    ['sleep', sleepTotal(sum.sleepMin), '', 'Ngủ'],
     ['pee', sum.pee, 'lần', 'Tiểu'],
     ['poop', sum.poop, 'lần', 'Đại'],
   ]
 }
 
+// Tổng ngủ dạng "1 giờ 5 phút", đơn vị viết nhỏ như các ô khác
+function sleepTotal(min) {
+  const h = Math.floor(min / 60)
+  const m = Math.round(min % 60)
+  if (h === 0) return <>{m}<small>phút</small></>
+  if (m === 0) return <>{h}<small>giờ</small></>
+  return <>{h}<small>giờ</small> {m}<small>phút</small></>
+}
+
 function detail(e) {
+  if (e.type === 'sleep') {
+    const duration = `(${formatHHMM(sleepDuration(e))})`
+    if (!e.end_at) return <span className="sleep-detail">đang ngủ <b>{duration}</b></span>
+    return <span className="sleep-detail">🌤️ Dậy {formatTime(e.end_at)} <b>{duration}</b></span>
+  }
   if (e.type === 'breast') return e.duration_min ? `${e.duration_min} phút` : ''
   return e.amount_ml ? `${e.amount_ml} ml` : ''
 }
@@ -47,6 +63,9 @@ export default function DayView({ day, onDayChange, version, onChanged }) {
 
   const [sum] = summarizeByDay(entries, 1, day)
   const today = isToday(day)
+  // Giấc ngủ bắt đầu từ hôm trước chỉ được tính vào tổng, danh sách hiện theo giờ bắt đầu.
+  // Ngoại lệ: giấc đang ngủ dở từ hôm trước vẫn hiện để biết bé đang ngủ.
+  const shown = entries.filter((e) => dayKey(e.at) === dayKey(day) || (e.type === 'sleep' && today && !e.end_at))
 
   async function remove(id) {
     if (confirmId !== id) {
@@ -92,10 +111,10 @@ export default function DayView({ day, onDayChange, version, onChanged }) {
       </div>
 
       <ul className="list">
-        {entries.map((e) => (
+        {shown.map((e) => (
           <li key={e.id}>
-            <span className="time">{new Date(e.at).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}</span>
-            <span>{TYPES[e.type].icon} {TYPES[e.type].label}</span>
+            <span className="time">{formatTime(e.at)}</span>
+            <span>{typeInfo(e.type).icon} {typeInfo(e.type).label}</span>
             <span className="muted">{detail(e)}</span>
             <button
               className={`link delete ${confirmId === e.id ? 'confirm' : ''}`}
@@ -106,7 +125,7 @@ export default function DayView({ day, onDayChange, version, onChanged }) {
             </button>
           </li>
         ))}
-        {entries.length === 0 && (
+        {shown.length === 0 && (
           <li className="muted empty">{today ? 'Chưa có ghi chép nào hôm nay.' : 'Không có ghi chép nào trong ngày này.'}</li>
         )}
       </ul>
