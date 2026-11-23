@@ -2,6 +2,9 @@ import { useState } from 'react'
 import { addDays, dayKey, formatHHMM, formatTime, isToday, sleepDuration, sleepMinutesIn, startOfDay, TYPES } from '../lib/entries'
 
 const DAY_MS = 24 * 60 * 60 * 1000
+// Vạch dọc mỗi 3 giờ; 6h/12h/18h là mốc chính
+const TICKS = [0, 3, 6, 9, 12, 15, 18, 21, 24]
+const isMajor = (h) => h % 6 === 0
 const COLORS = 5 // số màu xoay vòng, khai báo --sleep-1 … --sleep-5 trong index.css
 
 // Dải 0h → 24h: mỗi giấc ngủ là một khối liền, mỗi giấc một màu.
@@ -47,8 +50,8 @@ export default function SleepTimeline({ entries, day }) {
         <span>Tổng <b>{formatHHMM(total)}</b></span>
       </div>
 
+      <div className="st-plot">
       <div className="st-bar">
-        {[25, 50, 75].map((p) => <span key={p} className="st-grid" style={{ left: `${p}%` }} />)}
         {sleeps.map((s, i) => (
           <button
             key={s.e.id}
@@ -61,7 +64,6 @@ export default function SleepTimeline({ entries, day }) {
         {nowLeft !== null && <span className="st-now" style={{ left: `${nowLeft}%` }} />}
       </div>
       <div className="st-lanes">
-        {[25, 50, 75].map((p) => <span key={p} className="st-grid" style={{ left: `${p}%` }} />)}
         {lanes.map((lane) => (
           <div key={lane.type} className={`st-lane t-${lane.type}`}>
             {lane.events.map((e) => (
@@ -75,7 +77,18 @@ export default function SleepTimeline({ entries, day }) {
           </div>
         ))}
       </div>
-      <div className="st-axis"><span>0h</span><span>6h</span><span>12h</span><span>18h</span><span>24h</span></div>
+      {/* Vạch dọc chạy liền từ dải ngủ xuống hết các hàng chấm */}
+      <div className="st-grid-overlay" aria-hidden="true">
+        {TICKS.slice(1, -1).map((h) => (
+          <span key={h} className={`st-grid ${isMajor(h) ? 'major' : ''}`} style={{ left: `${(h / 24) * 100}%` }} />
+        ))}
+      </div>
+      </div>
+      <div className="st-axis">
+        {TICKS.map((h) => (
+          <span key={h} className={isMajor(h) ? 'major' : ''} style={{ left: `${(h / 24) * 100}%` }}>{h}h</span>
+        ))}
+      </div>
 
       <div className="st-legend">
         {lanes.map((lane) => (
