@@ -20,6 +20,7 @@ import {
   summarizeByDay,
   summarizeByHour,
 } from '../lib/entries'
+import SleepTimeline from './SleepTimeline'
 
 ChartJS.register(BarElement, CategoryScale, LinearScale, Legend, Tooltip)
 
@@ -27,20 +28,12 @@ const RANGES = [1, 7, 30]
 
 const options = { responsive: true, plugins: { legend: { position: 'bottom' } }, scales: { y: { beginAtZero: true } } }
 const noLegend = { ...options, plugins: { legend: { display: false } } }
-const sleepTooltip = (suffix) => ({ callbacks: { label: (c) => `Ngủ: ${c.parsed.y} ${suffix}` } })
-const sleepHours = { ...noLegend, plugins: { ...noLegend.plugins, tooltip: sleepTooltip('giờ') } }
-const sleepMinutes = {
-  ...noLegend,
-  plugins: { ...noLegend.plugins, tooltip: sleepTooltip('phút') },
-  scales: { y: { beginAtZero: true, max: 60, ticks: { stepSize: 15 } } },
-}
+const sleepHours = { ...noLegend, plugins: { ...noLegend.plugins, tooltip: { callbacks: { label: (c) => `Ngủ: ${c.parsed.y} giờ` } } } }
 // Số lần luôn là số nguyên, không hiện vạch 0.5
 const counts = { ...options, scales: { y: { beginAtZero: true, ticks: { precision: 0 } } } }
 
 // Các biểu đồ dùng chung cho cả xem theo giờ (1 ngày) và theo ngày (7/30 ngày)
-function Charts({ labels, rows, unit }) {
-  // Theo ngày thì tính bằng giờ, theo giờ thì tính bằng phút (tối đa 60)
-  const sleepInHours = unit === 'ngày'
+function Charts({ labels, rows, unit, sleep }) {
   return (
     <>
       <h3>Sữa CT (ml / {unit})</h3>
@@ -49,18 +42,19 @@ function Charts({ labels, rows, unit }) {
         options={noLegend}
       />
 
-      <h3>Giấc ngủ ({sleepInHours ? 'giờ' : 'phút'} / {unit})</h3>
-      <Bar
-        data={{
-          labels,
-          datasets: [{
-            label: 'Ngủ',
-            data: rows.map((r) => (sleepInHours ? Math.round(r.sleepMin / 6) / 10 : r.sleepMin)),
-            backgroundColor: '#6f6bd8',
-          }],
-        }}
-        options={sleepInHours ? sleepHours : sleepMinutes}
-      />
+      {/* Xem 1 ngày thì dùng dải thời gian (truyền qua `sleep`), 7/30 ngày thì biểu đồ cột */}
+      {sleep ?? (
+        <>
+          <h3>Giấc ngủ (giờ / {unit})</h3>
+          <Bar
+            data={{
+              labels,
+              datasets: [{ label: 'Ngủ', data: rows.map((r) => Math.round(r.sleepMin / 6) / 10), backgroundColor: '#6f6bd8' }],
+            }}
+            options={sleepHours}
+          />
+        </>
+      )}
 
       <h3>Số lần mỗi {unit}</h3>
       <Bar
@@ -83,11 +77,15 @@ export default function Stats({ version, onOpenDay }) {
   const [day, setDay] = useState(() => new Date()) // ngày đang xem khi chọn "1 ngày"
   const [rows, setRows] = useState([])
   const [hours, setHours] = useState([])
+  const [dayEntries, setDayEntries] = useState([])
 
   useEffect(() => {
     if (days === 1) {
       fetchEntriesOfDay(day)
-        .then((entries) => setHours(summarizeByHour(entries, day)))
+        .then((entries) => {
+          setDayEntries(entries)
+          setHours(summarizeByHour(entries, day))
+        })
         .catch((err) => alert(err.message))
       return
     }
@@ -122,7 +120,12 @@ export default function Stats({ version, onOpenDay }) {
             />
             <button aria-label="Ngày sau" disabled={isToday(day)} onClick={() => setDay(addDays(day, 1))}>›</button>
           </div>
-          <Charts labels={hours.map((h) => `${h.hour}h`)} rows={hours} unit="giờ" />
+          <Charts
+            labels={hours.map((h) => `${h.hour}h`)}
+            rows={hours}
+            unit="giờ"
+            sleep={<SleepTimeline entries={dayEntries} day={day} />}
+          />
           <button className="link see-day" onClick={() => onOpenDay(day)}>Xem từng lần ghi trong ngày ›</button>
         </>
       ) : (
