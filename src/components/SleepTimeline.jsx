@@ -1,10 +1,11 @@
 import { useState } from 'react'
-import { addDays, formatHHMM, formatTime, isToday, sleepDuration, sleepMinutesIn, startOfDay } from '../lib/entries'
+import { addDays, dayKey, formatHHMM, formatTime, isToday, sleepDuration, sleepMinutesIn, startOfDay, TYPES } from '../lib/entries'
 
 const DAY_MS = 24 * 60 * 60 * 1000
 const COLORS = 5 // số màu xoay vòng, khai báo --sleep-1 … --sleep-5 trong index.css
 
-// Dải 0h → 24h: mỗi giấc ngủ là một khối liền, mỗi giấc một màu
+// Dải 0h → 24h: mỗi giấc ngủ là một khối liền, mỗi giấc một màu.
+// Bên dưới là các hàng chấm cho từng loại ghi khác (bú mẹ, sữa CT, tiểu, đại).
 export default function SleepTimeline({ entries, day }) {
   const [selected, setSelected] = useState(null)
   const day0 = startOfDay(day)
@@ -28,6 +29,13 @@ export default function SleepTimeline({ entries, day }) {
       }
     })
 
+  // Mỗi loại một hàng để các chấm cùng giờ không đè lên nhau
+  const lanes = Object.entries(TYPES).map(([type, t]) => ({
+    type,
+    ...t,
+    events: entries.filter((e) => e.type === type && dayKey(e.at) === dayKey(day0)),
+  }))
+
   const total = sleeps.reduce((sum, s) => sum + sleepMinutesIn(s.e, day0, day1), 0)
   const nowLeft = isToday(day) ? ((Date.now() - day0) / DAY_MS) * 100 : null
   const toggle = (i) => setSelected(selected === i ? null : i)
@@ -35,7 +43,7 @@ export default function SleepTimeline({ entries, day }) {
   return (
     <div className="sleep-timeline">
       <div className="st-head">
-        <h3>Giấc ngủ trong ngày</h3>
+        <h3>Ngủ và sinh hoạt trong ngày</h3>
         <span>Tổng <b>{formatHHMM(total)}</b></span>
       </div>
 
@@ -52,7 +60,30 @@ export default function SleepTimeline({ entries, day }) {
         ))}
         {nowLeft !== null && <span className="st-now" style={{ left: `${nowLeft}%` }} />}
       </div>
+      <div className="st-lanes">
+        {[25, 50, 75].map((p) => <span key={p} className="st-grid" style={{ left: `${p}%` }} />)}
+        {lanes.map((lane) => (
+          <div key={lane.type} className={`st-lane t-${lane.type}`}>
+            {lane.events.map((e) => (
+              <span
+                key={e.id}
+                className="st-dot"
+                style={{ left: `${((new Date(e.at) - day0) / DAY_MS) * 100}%` }}
+                title={`${lane.label} ${formatTime(e.at)}`}
+              />
+            ))}
+          </div>
+        ))}
+      </div>
       <div className="st-axis"><span>0h</span><span>6h</span><span>12h</span><span>18h</span><span>24h</span></div>
+
+      <div className="st-legend">
+        {lanes.map((lane) => (
+          <span key={lane.type} className={`t-${lane.type}`}>
+            <span className="st-dot static" /> {lane.label} <b>{lane.events.length}</b>
+          </span>
+        ))}
+      </div>
 
       <ul className="st-list">
         {sleeps.map((s, i) => (
